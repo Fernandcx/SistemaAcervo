@@ -1,6 +1,7 @@
 import React from 'react';
 import { Search, X } from 'lucide-react';
 import type { LoansFilterState, LoanStatus, NormalUserCategory } from '../loans.types';
+import { CustomSelect } from '../../../components/ui/CustomSelect';
 
 interface LoansFiltersProps {
   filters: LoansFilterState;
@@ -46,57 +47,58 @@ export const LoansFilters: React.FC<LoansFiltersProps> = ({
         {/* Filter dropdowns matching Figma layout: Estado, Fecha de préstamo, Fecha límite */}
         <div className="loans-filters-group">
           {/* Dropdown 1: Estado */}
-          <select
+          <CustomSelect
             value={filters.status}
-            onChange={(e) =>
-              onFilterChange({ ...filters, status: e.target.value as '' | LoanStatus })
+            onChange={(val) =>
+              onFilterChange({ ...filters, status: val as '' | LoanStatus })
             }
-            className="loans-select"
+            options={[
+              { value: '', label: 'Estado' },
+              { value: 'ACTIVE', label: 'Activo' },
+              { value: 'DUE_SOON', label: 'Próximo a vencer' },
+              { value: 'OVERDUE', label: 'Vencido' },
+              { value: 'RETURNED', label: 'Devuelto' },
+            ]}
+            fullWidth={false}
             aria-label="Filtrar por estado"
-          >
-            <option value="">Estado</option>
-            <option value="ACTIVE">Activo</option>
-            <option value="DUE_SOON">Próximo a vencer</option>
-            <option value="OVERDUE">Vencido</option>
-            <option value="RETURNED">Devuelto</option>
-          </select>
+          />
 
           {/* Dropdown 2: Fecha de préstamo */}
-          <select
+          <CustomSelect
             value={filters.dateFilter}
-            onChange={(e) =>
-              onFilterChange({ ...filters, dateFilter: e.target.value })
+            onChange={(val) =>
+              onFilterChange({ ...filters, dateFilter: val })
             }
-            className="loans-select"
+            options={[
+              { value: '', label: 'Fecha de préstamo' },
+              { value: 'SEP_2026', label: 'Septiembre 2026' },
+              { value: 'THIS_MONTH', label: 'Este mes' },
+              { value: 'LAST_MONTH', label: 'Mes anterior' },
+            ]}
+            fullWidth={false}
             aria-label="Filtrar por fecha de préstamo"
-          >
-            <option value="">Fecha de préstamo</option>
-            <option value="SEP_2026">Septiembre 2026</option>
-            <option value="THIS_MONTH">Este mes</option>
-            <option value="LAST_MONTH">Mes anterior</option>
-          </select>
+          />
 
           {/* Dropdown 3: Fecha límite / Categoría */}
-          <select
+          <CustomSelect
             value={filters.userCategory}
-            onChange={(e) =>
+            onChange={(val) =>
               onFilterChange({
                 ...filters,
-                userCategory: e.target.value as '' | NormalUserCategory,
+                userCategory: val as '' | NormalUserCategory,
               })
             }
-            className="loans-select"
+            options={[
+              { value: '', label: 'Fecha límite / Categoría' },
+              { value: 'STUDENT', label: 'Alumnos' },
+              { value: 'TEACHER', label: 'Docentes' },
+              { value: 'ROOM', label: 'Salas' },
+              { value: 'EXTERNAL', label: 'Personas externas' },
+              { value: 'GRADUATE', label: 'Egresados' },
+            ]}
+            fullWidth={false}
             aria-label="Filtrar por fecha límite o categoría"
-          >
-            <option value="">Fecha límite</option>
-            <optgroup label="Filtrar por Categoría">
-              <option value="STUDENT">Alumnos</option>
-              <option value="TEACHER">Docentes</option>
-              <option value="ROOM">Salas</option>
-              <option value="EXTERNAL">Personas externas</option>
-              <option value="GRADUATE">Egresados</option>
-            </optgroup>
-          </select>
+          />
 
           {/* Limpiar filtros */}
           {hasActiveFilters && (

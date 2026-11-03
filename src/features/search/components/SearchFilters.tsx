@@ -2,6 +2,7 @@ import React from 'react';
 import { X, RotateCcw } from 'lucide-react';
 import type { SearchFilterState } from '../search.types';
 import { BIBLIOGRAPHIC_CATEGORIES, getCategoryFullLabel } from '../../../constants';
+import { CustomSelect } from '../../../components/ui/CustomSelect';
 
 interface SearchFiltersProps {
   filters: SearchFilterState;
@@ -29,69 +30,62 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
     <div className="search-filters-card">
       <div className="search-filters-row">
         {/* Categoría */}
-        <div className="search-filter-select-wrapper">
-          <select
-            value={filters.category}
-            onChange={(e) => onFilterChange('category', e.target.value)}
-            className={`search-filter-select ${filters.category ? 'search-filter-select--has-value' : ''}`}
-            aria-label="Filtrar por categoría"
-          >
-            <option value="">Todas las categorías</option>
-            {BIBLIOGRAPHIC_CATEGORIES.map((cat) => (
-              <option key={cat.code} value={cat.code}>
-                {cat.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        <CustomSelect
+          value={filters.category}
+          onChange={(val) => onFilterChange('category', val)}
+          options={[
+            { value: '', label: 'Todas las categorías' },
+            ...BIBLIOGRAPHIC_CATEGORIES.map((cat) => ({
+              value: cat.code,
+              label: cat.label,
+            })),
+          ]}
+          size="sm"
+          aria-label="Filtrar por categoría"
+        />
 
         {/* Autor */}
-        <div className="search-filter-select-wrapper">
-          <select
-            value={filters.author}
-            onChange={(e) => onFilterChange('author', e.target.value)}
-            className={`search-filter-select ${filters.author ? 'search-filter-select--has-value' : ''}`}
-            aria-label="Filtrar por autor"
-          >
-            <option value="">Autor</option>
-            {authors.map((auth) => (
-              <option key={auth} value={auth}>
-                {auth}
-              </option>
-            ))}
-          </select>
-        </div>
+        <CustomSelect
+          value={filters.author}
+          onChange={(val) => onFilterChange('author', val)}
+          options={[
+            { value: '', label: 'Autor' },
+            ...authors.map((auth) => ({
+              value: auth,
+              label: auth,
+            })),
+          ]}
+          size="sm"
+          aria-label="Filtrar por autor"
+        />
 
         {/* Año de publicación */}
-        <div className="search-filter-select-wrapper">
-          <select
-            value={filters.publicationYear}
-            onChange={(e) => onFilterChange('publicationYear', e.target.value)}
-            className={`search-filter-select ${filters.publicationYear ? 'search-filter-select--has-value' : ''}`}
-            aria-label="Filtrar por año de publicación"
-          >
-            <option value="">Año de publicación</option>
-            {years.map((year) => (
-              <option key={year} value={String(year)}>
-                {year}
-              </option>
-            ))}
-          </select>
-        </div>
+        <CustomSelect
+          value={filters.publicationYear}
+          onChange={(val) => onFilterChange('publicationYear', val)}
+          options={[
+            { value: '', label: 'Año de publicación' },
+            ...years.map((year) => ({
+              value: String(year),
+              label: String(year),
+            })),
+          ]}
+          size="sm"
+          aria-label="Filtrar por año de publicación"
+        />
 
         {/* Disponibilidad */}
-        <div className="search-filter-select-wrapper">
-          <select
-            value={filters.availability}
-            onChange={(e) => onFilterChange('availability', e.target.value)}
-            className={`search-filter-select ${filters.availability ? 'search-filter-select--has-value' : ''}`}
-            aria-label="Filtrar por disponibilidad"
-          >
-            <option value="">Disponibilidad</option>
-            <option value="AVAILABLE">Disponible</option>
-            <option value="BORROWED">En préstamo</option>
-          </select>
-        </div>
+        <CustomSelect
+          value={filters.availability}
+          onChange={(val) => onFilterChange('availability', val)}
+          options={[
+            { value: '', label: 'Disponibilidad' },
+            { value: 'AVAILABLE', label: 'Disponible' },
+            { value: 'BORROWED', label: 'En préstamo' },
+          ]}
+          size="sm"
+          aria-label="Filtrar por disponibilidad"
+        />
       </div>
 
       {/* Active filter badges row if any filter is set */}

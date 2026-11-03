@@ -1,6 +1,7 @@
 import React from 'react';
 import { Search, X } from 'lucide-react';
 import type { ReturnsFilterState, LoanStatus, NormalUserCategory } from '../returns.types';
+import { CustomSelect } from '../../../components/ui/CustomSelect';
 
 interface ReturnsFiltersProps {
   filters: ReturnsFilterState;
@@ -46,54 +47,57 @@ export const ReturnsFilters: React.FC<ReturnsFiltersProps> = ({
         {/* Dropdowns group matching Figma layout: Estado, Fecha límite, Usuario */}
         <div className="returns-filters-group">
           {/* Dropdown 1: Estado */}
-          <select
+          <CustomSelect
             value={filters.status}
-            onChange={(e) =>
-              onFilterChange({ ...filters, status: e.target.value as '' | LoanStatus })
+            onChange={(val) =>
+              onFilterChange({ ...filters, status: val as '' | LoanStatus })
             }
-            className="returns-select"
+            options={[
+              { value: '', label: 'Estado' },
+              { value: 'ACTIVE', label: 'Activo' },
+              { value: 'DUE_SOON', label: 'Próximo a vencer' },
+              { value: 'OVERDUE', label: 'Vencido' },
+            ]}
+            fullWidth={false}
             aria-label="Filtrar por estado"
-          >
-            <option value="">Estado</option>
-            <option value="ACTIVE">Activo</option>
-            <option value="DUE_SOON">Próximo a vencer</option>
-            <option value="OVERDUE">Vencido</option>
-          </select>
+          />
 
           {/* Dropdown 2: Fecha límite */}
-          <select
+          <CustomSelect
             value={filters.dueDateFilter}
-            onChange={(e) =>
-              onFilterChange({ ...filters, dueDateFilter: e.target.value })
+            onChange={(val) =>
+              onFilterChange({ ...filters, dueDateFilter: val })
             }
-            className="returns-select"
+            options={[
+              { value: '', label: 'Fecha límite' },
+              { value: 'OVERDUE_ONLY', label: 'Solo vencidos' },
+              { value: 'THIS_WEEK', label: 'Esta semana' },
+              { value: 'OCT_2026', label: 'Octubre 2026' },
+            ]}
+            fullWidth={false}
             aria-label="Filtrar por fecha límite"
-          >
-            <option value="">Fecha límite</option>
-            <option value="OVERDUE_ONLY">Solo vencidos</option>
-            <option value="THIS_WEEK">Esta semana</option>
-            <option value="OCT_2026">Octubre 2026</option>
-          </select>
+          />
 
           {/* Dropdown 3: Usuario / Categoría */}
-          <select
+          <CustomSelect
             value={filters.userCategory}
-            onChange={(e) =>
+            onChange={(val) =>
               onFilterChange({
                 ...filters,
-                userCategory: e.target.value as '' | NormalUserCategory,
+                userCategory: val as '' | NormalUserCategory,
               })
             }
-            className="returns-select"
+            options={[
+              { value: '', label: 'Usuario' },
+              { value: 'STUDENT', label: 'Alumno' },
+              { value: 'TEACHER', label: 'Docente' },
+              { value: 'EXTERNAL', label: 'Persona externa' },
+              { value: 'ROOM', label: 'Sala' },
+              { value: 'GRADUATE', label: 'Egresado' },
+            ]}
+            fullWidth={false}
             aria-label="Filtrar por tipo o categoría de usuario"
-          >
-            <option value="">Usuario</option>
-            <option value="STUDENT">Alumno</option>
-            <option value="TEACHER">Docente</option>
-            <option value="EXTERNAL">Persona externa</option>
-            <option value="ROOM">Sala</option>
-            <option value="GRADUATE">Egresado</option>
-          </select>
+          />
 
           {/* Limpiar filtros */}
           {hasActiveFilters && (

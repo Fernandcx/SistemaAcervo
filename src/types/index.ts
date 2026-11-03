@@ -35,6 +35,12 @@ export interface Book {
   location: string; // e.g. "Estante A-3, Nivel 2"
   coverUrl?: string;
   description?: string;
+  rating?: number;
+  reviewsCount?: number;
+  topics?: string[];
+  language?: string;
+  materialType?: string;
+  schedule?: string;
 }
 
 export type LoanStatus = 'ACTIVE' | 'RETURNED' | 'OVERDUE';
@@ -55,7 +61,13 @@ export interface Loan {
   notes?: string;
 }
 
-export type RequestStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXPIRED';
+export type RequestStatus =
+  | 'PENDING'
+  | 'APPROVED'
+  | 'READY_FOR_PICKUP'
+  | 'REJECTED'
+  | 'CANCELLED'
+  | 'EXPIRED';
 
 export interface BorrowRequest {
   id: string;
@@ -67,6 +79,8 @@ export interface BorrowRequest {
   requestDate: string;
   status: RequestStatus;
   notes?: string;
+  pickupLocation?: string;
+  suggestedDate?: string;
 }
 
 export interface SmartSearchResult {

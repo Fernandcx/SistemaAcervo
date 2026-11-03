@@ -1,5 +1,6 @@
 import React from 'react';
 import type { SortOption } from '../search.types';
+import { CustomSelect } from '../../../components/ui/CustomSelect';
 
 interface SearchSortProps {
   query: string;
@@ -31,20 +32,21 @@ export const SearchSort: React.FC<SearchSortProps> = ({
       </div>
 
       <div className="search-sort-group">
-        <label htmlFor="search-sort-select" className="search-sort-label">
-          Ordenar por:
-        </label>
-        <select
+        <span className="search-sort-label">Ordenar por:</span>
+        <CustomSelect
           id="search-sort-select"
+          variant="inline"
           value={sortBy}
-          onChange={(e) => onSortChange(e.target.value as SortOption)}
-          className="search-sort-select"
+          onChange={(val) => onSortChange(val as SortOption)}
+          options={[
+            { value: 'relevance', label: 'Relevancia' },
+            { value: 'title', label: 'Título' },
+            { value: 'recent', label: 'Más recientes' },
+          ]}
+          fullWidth={false}
+          align="right"
           aria-label="Ordenar resultados"
-        >
-          <option value="relevance">Relevancia</option>
-          <option value="title">Título</option>
-          <option value="recent">Más recientes</option>
-        </select>
+        />
       </div>
     </div>
   );

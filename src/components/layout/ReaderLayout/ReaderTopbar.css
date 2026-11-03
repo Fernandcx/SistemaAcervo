@@ -49,6 +49,36 @@
   line-height: 1.25;
 }
 
+.reader-topbar-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9375rem;
+  line-height: 1.25;
+}
+
+.reader-topbar-breadcrumb-link {
+  color: #64748B;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+.reader-topbar-breadcrumb-link:hover {
+  color: #2563EB;
+}
+
+.reader-topbar-breadcrumb-sep {
+  color: #94A3B8;
+  font-size: 0.875rem;
+  user-select: none;
+}
+
+.reader-topbar-breadcrumb-current {
+  color: #1E293B;
+  font-weight: 700;
+}
+
 .reader-topbar-subtitle {
   font-size: 0.75rem;
   color: #64748B;

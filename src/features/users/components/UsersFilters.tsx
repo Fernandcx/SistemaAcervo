@@ -1,6 +1,7 @@
 import React from 'react';
 import { X } from 'lucide-react';
 import type { UsersFilterState, UserKind, UserStatus } from '../users.types';
+import { CustomSelect } from '../../../components/ui/CustomSelect';
 
 interface UsersFiltersProps {
   filters: UsersFilterState;
@@ -22,71 +23,74 @@ export const UsersFilters: React.FC<UsersFiltersProps> = ({
   return (
     <div className="users-filters-row">
       {/* 1. Rol o categoría (labeled Rol as in Figma) */}
-      <select
+      <CustomSelect
         value={filters.roleOrCategory}
-        onChange={(e) =>
+        onChange={(val) =>
           onFilterChange({
             ...filters,
-            roleOrCategory: e.target.value,
+            roleOrCategory: val,
           })
         }
-        className="users-select"
+        options={[
+          { value: '', label: 'Rol' },
+          ...((!filters.kind || filters.kind === 'ADMINISTRATIVE')
+            ? [
+                { value: 'ADMIN', label: 'Administrador' },
+                { value: 'LIBRARIAN', label: 'Bibliotecario' },
+              ]
+            : []),
+          ...((!filters.kind || filters.kind === 'NORMAL')
+            ? [
+                { value: 'TEACHER', label: 'Docente' },
+                { value: 'STUDENT', label: 'Lector' },
+                { value: 'EXTERNAL', label: 'Persona externa' },
+                { value: 'ROOM', label: 'Sala' },
+                { value: 'GRADUATE', label: 'Egresado' },
+              ]
+            : []),
+        ]}
+        fullWidth={false}
         aria-label="Filtrar por rol o categoría"
-      >
-        <option value="">Rol</option>
-        {(!filters.kind || filters.kind === 'ADMINISTRATIVE') && (
-          <optgroup label="Administrativos">
-            <option value="ADMIN">Administrador</option>
-            <option value="LIBRARIAN">Bibliotecario</option>
-          </optgroup>
-        )}
-        {(!filters.kind || filters.kind === 'NORMAL') && (
-          <optgroup label="Usuarios Normales">
-            <option value="TEACHER">Docente</option>
-            <option value="STUDENT">Lector</option>
-            <option value="EXTERNAL">Persona externa</option>
-            <option value="ROOM">Sala</option>
-            <option value="GRADUATE">Egresado</option>
-          </optgroup>
-        )}
-      </select>
+      />
 
       {/* 2. Estado (as in Figma) */}
-      <select
+      <CustomSelect
         value={filters.status}
-        onChange={(e) =>
+        onChange={(val) =>
           onFilterChange({
             ...filters,
-            status: e.target.value as '' | UserStatus | 'OVERDUE',
+            status: val as '' | UserStatus | 'OVERDUE',
           })
         }
-        className="users-select"
+        options={[
+          { value: '', label: 'Estado' },
+          { value: 'ACTIVE', label: 'Activo' },
+          { value: 'INACTIVE', label: 'Inactivo' },
+          { value: 'SUSPENDED', label: 'Suspendido' },
+          { value: 'OVERDUE', label: 'Préstamo vencido' },
+        ]}
+        fullWidth={false}
         aria-label="Filtrar por estado"
-      >
-        <option value="">Estado</option>
-        <option value="ACTIVE">Activo</option>
-        <option value="INACTIVE">Inactivo</option>
-        <option value="SUSPENDED">Suspendido</option>
-        <option value="OVERDUE">Préstamo vencido</option>
-      </select>
+      />
 
       {/* 3. Tipo de usuario */}
-      <select
+      <CustomSelect
         value={filters.kind}
-        onChange={(e) =>
+        onChange={(val) =>
           onFilterChange({
             ...filters,
-            kind: e.target.value as '' | UserKind,
+            kind: val as '' | UserKind,
             roleOrCategory: '',
           })
         }
-        className="users-select"
+        options={[
+          { value: '', label: 'Tipo' },
+          { value: 'ADMINISTRATIVE', label: 'Administrativo' },
+          { value: 'NORMAL', label: 'Usuario normal' },
+        ]}
+        fullWidth={false}
         aria-label="Filtrar por tipo de usuario"
-      >
-        <option value="">Tipo</option>
-        <option value="ADMINISTRATIVE">Administrativo</option>
-        <option value="NORMAL">Usuario normal</option>
-      </select>
+      />
 
       {/* Botón Limpiar filtros cuando hay filtros aplicados */}
       {hasActiveFilters && (

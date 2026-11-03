@@ -63,6 +63,10 @@
 }
 
 /* Bell Notification Button */
+.app-topbar-notify-wrapper {
+  position: relative;
+}
+
 .app-topbar-bell-btn {
   position: relative;
   background: none;
@@ -89,6 +93,114 @@
   background-color: #EB5757;
   border: 2px solid #FFFFFF;
   border-radius: 50%;
+}
+
+/* Notifications Popover */
+.app-notifications-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: -10px;
+  width: 310px;
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  padding: 12px;
+  z-index: 50;
+}
+
+.app-notifications-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #F1F5F9;
+  margin-bottom: 8px;
+}
+
+.app-notifications-title {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #1E293B;
+}
+
+.app-notifications-badge {
+  font-size: 0.6875rem;
+  background-color: #EFF6FF;
+  color: #2563EB;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
+.app-notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.app-notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  background-color: #F8FAFC;
+  transition: background-color 0.15s ease;
+}
+
+.app-notification-item:hover {
+  background-color: #F1F5F9;
+}
+
+.app-notification-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.app-notification-icon--warning {
+  background-color: #FEF3C7;
+  color: #D97706;
+}
+
+.app-notification-icon--info {
+  background-color: #EFF6FF;
+  color: #2563EB;
+}
+
+.app-notification-icon--success {
+  background-color: #DCFCE7;
+  color: #16A34A;
+}
+
+.app-notification-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-notification-text {
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: #334155;
+  margin: 0;
+}
+
+.app-notification-text strong {
+  color: #0F172A;
+  font-weight: 600;
+}
+
+.app-notification-time {
+  font-size: 0.6875rem;
+  color: #94A3B8;
+  display: block;
+  margin-top: 3px;
 }
 
 /* User profile */

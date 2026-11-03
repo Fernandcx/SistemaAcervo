@@ -318,6 +318,7 @@ export const UserHomePage: React.FC = () => {
 
                 <Link
                   to={`/user/catalog/${book.id}`}
+                  state={{ from: '/user/home' }}
                   className="reader-book-action-btn"
                   aria-label={`Ver libro ${book.title}`}
                 >
@@ -352,6 +353,7 @@ export const UserHomePage: React.FC = () => {
             {/* Item 1: Hábitos atómicos */}
             <Link
               to="/user/catalog/book-habitos-atomicos"
+              state={{ from: '/user/home' }}
               className="reader-novedad-card"
               aria-label="Ver novedad Hábitos atómicos"
             >
@@ -368,6 +370,7 @@ export const UserHomePage: React.FC = () => {
             {/* Item 2: Breve historia del tiempo */}
             <Link
               to="/user/catalog/book-breve-historia"
+              state={{ from: '/user/home' }}
               className="reader-novedad-card"
               aria-label="Ver novedad Breve historia del tiempo"
             >
@@ -384,6 +387,7 @@ export const UserHomePage: React.FC = () => {
             {/* Item 3: Diseño de interfaces */}
             <Link
               to="/user/catalog/book-diseno-interfaces"
+              state={{ from: '/user/home' }}
               className="reader-novedad-card"
               aria-label="Ver novedad Diseño de interfaces"
             >

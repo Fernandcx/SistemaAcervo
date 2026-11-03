@@ -2,6 +2,7 @@ import React from 'react';
 import { Search } from 'lucide-react';
 import type { CatalogFilterState } from '../catalog.types';
 import { BIBLIOGRAPHIC_CATEGORIES } from '../../../constants';
+import { CustomSelect } from '../../../components/ui/CustomSelect';
 
 interface CatalogToolbarProps {
   filters: CatalogFilterState;
@@ -45,52 +46,48 @@ export const CatalogToolbar: React.FC<CatalogToolbarProps> = ({
         </div>
 
         {/* Category Dropdown */}
-        <select
+        <CustomSelect
           value={filters.category}
-          onChange={(e) =>
-            onFilterChange({ ...filters, category: e.target.value })
-          }
-          className="catalog-select"
+          onChange={(val) => onFilterChange({ ...filters, category: val })}
+          options={[
+            { value: '', label: 'Todas las categorías' },
+            ...BIBLIOGRAPHIC_CATEGORIES.map((cat) => ({
+              value: cat.code,
+              label: cat.label,
+            })),
+          ]}
+          fullWidth={false}
           aria-label="Filtrar por categoría"
-        >
-          <option value="">Todas las categorías</option>
-          {BIBLIOGRAPHIC_CATEGORIES.map((cat) => (
-            <option key={cat.code} value={cat.code}>
-              {cat.label}
-            </option>
-          ))}
-        </select>
+        />
 
         {/* Availability Status Dropdown */}
-        <select
+        <CustomSelect
           value={filters.status}
-          onChange={(e) =>
-            onFilterChange({ ...filters, status: e.target.value })
-          }
-          className="catalog-select"
+          onChange={(val) => onFilterChange({ ...filters, status: val })}
+          options={[
+            { value: '', label: 'Disponibilidad' },
+            { value: 'AVAILABLE', label: 'Disponible' },
+            { value: 'LOW_STOCK', label: 'Pocos ejemplares' },
+            { value: 'LOANED', label: 'Prestado' },
+            { value: 'UNAVAILABLE', label: 'No disponible' },
+          ]}
+          fullWidth={false}
           aria-label="Filtrar por disponibilidad"
-        >
-          <option value="">Disponibilidad</option>
-          <option value="AVAILABLE">Disponible</option>
-          <option value="LOW_STOCK">Pocos ejemplares</option>
-          <option value="LOANED">Prestado</option>
-          <option value="UNAVAILABLE">No disponible</option>
-        </select>
+        />
 
         {/* Publication Year Dropdown */}
-        <select
+        <CustomSelect
           value={filters.publicationYear}
-          onChange={(e) =>
-            onFilterChange({ ...filters, publicationYear: e.target.value })
-          }
-          className="catalog-select"
+          onChange={(val) => onFilterChange({ ...filters, publicationYear: val })}
+          options={[
+            { value: '', label: 'Año de publicación' },
+            { value: '2020+', label: '2020 - Actual' },
+            { value: '2000-2019', label: '2000 - 2019' },
+            { value: 'PRE-2000', label: 'Antes de 2000' },
+          ]}
+          fullWidth={false}
           aria-label="Filtrar por año de publicación"
-        >
-          <option value="">Año de publicación</option>
-          <option value="2020+">2020 - Actual</option>
-          <option value="2000-2019">2000 - 2019</option>
-          <option value="PRE-2000">Antes de 2000</option>
-        </select>
+        />
 
         {/* Clear Filters Button */}
         {hasActiveFilters && (

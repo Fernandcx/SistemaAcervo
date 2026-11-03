@@ -1,5 +1,6 @@
 @import './variables.css';
 @import './reset.css';
+@import './controls.css';
 
 body {
   font-family: var(--font-family-base);

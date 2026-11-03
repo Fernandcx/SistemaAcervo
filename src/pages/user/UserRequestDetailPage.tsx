@@ -5,13 +5,14 @@ import { Card, CardHeader, CardBody } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { EmptyState } from '../../components/ui/EmptyState';
-import { MOCK_REQUESTS, MOCK_BOOKS } from '../../mocks/data';
+import { MOCK_BOOKS } from '../../mocks/data';
+import { getBorrowRequestById } from '../../features/loans/requests.service';
 
 export const UserRequestDetailPage: React.FC = () => {
   const { requestId } = useParams<{ requestId: string }>();
   const navigate = useNavigate();
 
-  const req = MOCK_REQUESTS.find((r) => r.id === requestId);
+  const req = requestId ? getBorrowRequestById(requestId) : undefined;
   const book = req ? MOCK_BOOKS.find((b) => b.id === req.bookId || b.title === req.bookTitle) : null;
 
   if (!req) {

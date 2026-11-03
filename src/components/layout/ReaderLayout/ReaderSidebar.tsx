@@ -87,7 +87,9 @@ export const ReaderSidebar: React.FC<ReaderSidebarProps> = ({
         <nav className="reader-sidebar-nav">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.path;
+            const isActive =
+              location.pathname === item.path ||
+              (item.path === '/user/catalog' && location.pathname.startsWith('/user/catalog/'));
 
             return (
               <NavLink

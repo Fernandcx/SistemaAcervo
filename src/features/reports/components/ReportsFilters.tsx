@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { Clock, Filter, Download, ChevronDown } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Clock, Filter, Download, ChevronDown, Check } from 'lucide-react';
 import type { ReportsFilterState } from '../reports.types';
 import { BIBLIOGRAPHIC_CATEGORIES } from '../../../constants';
+import { CustomSelect } from '../../../components/ui/CustomSelect';
 
 interface ReportsFiltersProps {
   filters: ReportsFilterState;
@@ -17,6 +18,27 @@ export const ReportsFilters: React.FC<ReportsFiltersProps> = ({
   onExportReport,
 }) => {
   const [showDateDropdown, setShowDateDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showDateDropdown) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowDateDropdown(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowDateDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showDateDropdown]);
 
   const datePresets = [
     { label: '01 sep. 2026 — 29 sep. 2026 (Este mes)', start: '2026-09-01', end: '2026-09-29' },
@@ -30,12 +52,14 @@ export const ReportsFilters: React.FC<ReportsFiltersProps> = ({
     <div className="reports-toolbar-card" role="toolbar" aria-label="Filtros de reportes">
       <div className="reports-toolbar-left">
         {/* Date Range Picker Trigger */}
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: 'relative' }} ref={dropdownRef}>
           <button
             type="button"
             onClick={() => setShowDateDropdown(!showDateDropdown)}
-            className="reports-date-picker-btn"
+            className={`reports-date-picker-btn ${showDateDropdown ? 'reports-date-picker-btn--active' : ''}`}
             aria-label="Seleccionar rango de fechas"
+            aria-expanded={showDateDropdown}
+            aria-haspopup="menu"
             title="Cambiar periodo de análisis"
           >
             <Clock size={15} color="#6B7280" />
@@ -45,91 +69,84 @@ export const ReportsFilters: React.FC<ReportsFiltersProps> = ({
 
           {showDateDropdown && (
             <div
+              className="reports-date-dropdown-menu"
+              role="menu"
+              aria-label="Rangos de fecha predefinidos"
               style={{
                 position: 'absolute',
-                top: 'calc(100% + 4px)',
+                top: 'calc(100% + 6px)',
                 left: 0,
-                zIndex: 50,
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #E5E7EB',
-                borderRadius: '8px',
-                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-                minWidth: '280px',
-                padding: '6px 0',
+                zIndex: 60,
+                minWidth: '290px',
               }}
             >
-              {datePresets.map((preset) => (
-                <button
-                  key={preset.label}
-                  type="button"
-                  onClick={() => {
-                    onFilterChange('dateRange', '01 sep. 2026  —  29 sep. 2026');
-                    onFilterChange('startDate', preset.start);
-                    onFilterChange('endDate', preset.end);
-                    setShowDateDropdown(false);
-                  }}
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    textAlign: 'left',
-                    padding: '8px 14px',
-                    fontSize: '0.8125rem',
-                    color: '#374151',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F3F4F6')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-                >
-                  {preset.label}
-                </button>
-              ))}
+              {datePresets.map((preset) => {
+                const isSelected = filters.startDate === preset.start && filters.endDate === preset.end;
+                return (
+                  <button
+                    key={preset.label}
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      onFilterChange('dateRange', preset.label.split(' (')[0]);
+                      onFilterChange('startDate', preset.start);
+                      onFilterChange('endDate', preset.end);
+                      setShowDateDropdown(false);
+                    }}
+                    className={`reports-date-preset-item ${isSelected ? 'reports-date-preset-item--selected' : ''}`}
+                  >
+                    <span>{preset.label}</span>
+                    {isSelected && <Check size={14} color="#2563EB" aria-hidden="true" />}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
 
         {/* Categoría */}
-        <select
+        <CustomSelect
           value={filters.category}
-          onChange={(e) => onFilterChange('category', e.target.value)}
-          className="reports-select"
+          onChange={(val) => onFilterChange('category', val)}
+          options={[
+            { value: '', label: 'Todas las categorías' },
+            ...BIBLIOGRAPHIC_CATEGORIES.map((cat) => ({
+              value: cat.code,
+              label: cat.label,
+            })),
+          ]}
+          fullWidth={false}
           aria-label="Filtrar por categoría"
-        >
-          <option value="">Todas las categorías</option>
-          {BIBLIOGRAPHIC_CATEGORIES.map((cat) => (
-            <option key={cat.code} value={cat.code}>
-              {cat.label}
-            </option>
-          ))}
-        </select>
+        />
 
         {/* Usuario */}
-        <select
+        <CustomSelect
           value={filters.userType}
-          onChange={(e) => onFilterChange('userType', e.target.value)}
-          className="reports-select"
+          onChange={(val) => onFilterChange('userType', val)}
+          options={[
+            { value: '', label: 'Usuario' },
+            { value: 'STUDENT', label: 'Alumno' },
+            { value: 'TEACHER', label: 'Docente' },
+            { value: 'GRADUATE', label: 'Egresado' },
+            { value: 'EXTERNAL', label: 'Persona externa' },
+          ]}
+          fullWidth={false}
           aria-label="Filtrar por tipo de usuario"
-        >
-          <option value="">Usuario</option>
-          <option value="STUDENT">Alumno</option>
-          <option value="TEACHER">Docente</option>
-          <option value="GRADUATE">Egresado</option>
-          <option value="EXTERNAL">Persona externa</option>
-        </select>
+        />
 
         {/* Estado préstamo */}
-        <select
+        <CustomSelect
           value={filters.loanStatus}
-          onChange={(e) => onFilterChange('loanStatus', e.target.value)}
-          className="reports-select"
+          onChange={(val) => onFilterChange('loanStatus', val)}
+          options={[
+            { value: '', label: 'Estado préstamo' },
+            { value: 'ACTIVE', label: 'Activo' },
+            { value: 'RETURNED', label: 'Devuelto' },
+            { value: 'OVERDUE', label: 'Vencido' },
+          ]}
+          fullWidth={false}
           aria-label="Filtrar por estado del préstamo"
-        >
-          <option value="">Estado préstamo</option>
-          <option value="ACTIVE">Activo</option>
-          <option value="RETURNED">Devuelto</option>
-          <option value="OVERDUE">Vencido</option>
-        </select>
+        />
       </div>
 
       <div className="reports-toolbar-right">

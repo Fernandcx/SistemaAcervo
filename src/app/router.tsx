@@ -27,6 +27,8 @@ import { SearchPage } from '../pages/search/SearchPage';
 import { UserHomePage } from '../pages/user/UserHomePage';
 import { UserCatalogPage } from '../pages/user/UserCatalogPage';
 import { UserBookDetailPage } from '../pages/user/UserBookDetailPage';
+import { UserBorrowRequestPage } from '../pages/user/UserBorrowRequestPage';
+import { UserRequestSuccessPage } from '../pages/user/UserRequestSuccessPage';
 import { UserRequestsPage } from '../pages/user/UserRequestsPage';
 import { UserRequestDetailPage } from '../pages/user/UserRequestDetailPage';
 import { UserLoansPage } from '../pages/user/UserLoansPage';
@@ -149,6 +151,26 @@ export const router = createBrowserRouter([
       {
         path: 'catalog/:bookId',
         element: <UserBookDetailPage />,
+      },
+      {
+        path: 'catalog/:bookId/request',
+        element: <UserBorrowRequestPage />,
+      },
+      {
+        path: 'catalog/:bookId/solicitar',
+        element: <UserBorrowRequestPage />,
+      },
+      {
+        path: 'catalog/:bookId/request/success/:requestId',
+        element: <UserRequestSuccessPage />,
+      },
+      {
+        path: 'catalog/:bookId/request/success',
+        element: <UserRequestSuccessPage />,
+      },
+      {
+        path: 'requests/:requestId/success',
+        element: <UserRequestSuccessPage />,
       },
       {
         path: 'requests',

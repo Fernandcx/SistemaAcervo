@@ -115,14 +115,13 @@
 }
 
 .register-loan-results-list {
-  max-height: 180px;
+  max-height: 200px;
   overflow-y: auto;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #E2E8F0;
   border-radius: var(--radius-sm, 8px);
-  background-color: #FAFAFB;
+  background-color: #FFFFFF;
   display: flex;
   flex-direction: column;
-  divide-y: 1px solid #E5E7EB;
 }
 
 .register-loan-no-results {

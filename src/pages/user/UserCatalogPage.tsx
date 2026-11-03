@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Search,
-  ChevronDown,
   Check,
   Clock,
   Ban,
@@ -21,6 +20,7 @@ import {
   resolveCategory,
   getCategoryName,
 } from '../../constants';
+import { CustomSelect } from '../../components/ui/CustomSelect';
 import './UserCatalogPage.css';
 
 const ITEMS_PER_PAGE = 6;
@@ -188,6 +188,7 @@ const getBookCoverMetadata = (book: Book): BookCoverMetadata => {
 
 export const UserCatalogPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
 
   // Search state
   const initialSearch = searchParams.get('search') || '';
@@ -241,6 +242,68 @@ export const UserCatalogPage: React.FC = () => {
     const locs = Array.from(new Set(MOCK_BOOKS.map((b) => b.location))).sort();
     return locs;
   }, []);
+
+  // Memoized options for CustomSelect components
+  const categoryOptions = useMemo(
+    () => [
+      { value: 'ALL', label: 'Todas' },
+      ...BIBLIOGRAPHIC_CATEGORIES.map((cat) => ({
+        value: cat.code,
+        label: cat.label,
+      })),
+    ],
+    []
+  );
+
+  const authorOptions = useMemo(
+    () => [
+      { value: 'ALL', label: 'Todos' },
+      ...uniqueAuthors.map((author) => ({ value: author, label: author })),
+    ],
+    [uniqueAuthors]
+  );
+
+  const yearOptions = useMemo(
+    () => [
+      { value: 'ALL', label: 'Todos' },
+      ...uniqueYears.map((year) => ({
+        value: year.toString(),
+        label: year.toString(),
+      })),
+    ],
+    [uniqueYears]
+  );
+
+  const locationOptions = useMemo(
+    () => [
+      { value: 'ALL', label: 'Todas' },
+      ...uniqueLocations.map((loc) => ({ value: loc, label: loc })),
+    ],
+    [uniqueLocations]
+  );
+
+  const sortOptions = useMemo(
+    () => [
+      { value: 'relevance', label: 'Relevancia' },
+      { value: 'title-asc', label: 'Título (A - Z)' },
+      { value: 'title-desc', label: 'Título (Z - A)' },
+      { value: 'year-desc', label: 'Año (Más reciente)' },
+      { value: 'year-asc', label: 'Año (Más antiguo)' },
+      { value: 'available-desc', label: 'Disponibilidad' },
+    ],
+    []
+  );
+
+  const scopeOptions = useMemo(
+    () => [
+      { value: 'ALL', label: 'Todo' },
+      { value: 'title', label: 'Título' },
+      { value: 'author', label: 'Autor' },
+      { value: 'category', label: 'Tema / Categoría' },
+      { value: 'isbn', label: 'ISBN' },
+    ],
+    []
+  );
 
   // Count active filters
   const activeFiltersCount = useMemo(() => {
@@ -428,9 +491,9 @@ export const UserCatalogPage: React.FC = () => {
   return (
     <div className="catalog-container">
       {/* 1. Header */}
-      <header className="catalog-header">
-        <h1 className="catalog-title">Explora nuestro catálogo</h1>
-        <p className="catalog-subtitle">
+      <header className="user-catalog-header">
+        <h1 className="user-catalog-title">Explora nuestro catálogo</h1>
+        <p className="user-catalog-subtitle">
           Encuentra libros por título, autor o tema.
         </p>
       </header>
@@ -442,8 +505,8 @@ export const UserCatalogPage: React.FC = () => {
         role="search"
         aria-label="Buscador del catálogo"
       >
-        <div className="catalog-search-input-wrapper">
-          <Search size={20} className="catalog-search-icon" aria-hidden="true" />
+        <div className="catalog-search-field-container">
+          <Search size={18} className="catalog-search-icon" aria-hidden="true" />
           <input
             type="text"
             className="catalog-search-input"
@@ -462,34 +525,29 @@ export const UserCatalogPage: React.FC = () => {
               <X size={16} />
             </button>
           )}
+          <button type="submit" className="catalog-search-submit-btn">
+            Buscar
+          </button>
         </div>
 
-        <button type="submit" className="catalog-search-submit-btn">
-          Buscar
-        </button>
-
-        <div className="catalog-search-scope">
+        <div className="catalog-search-scope-box">
           <label
             htmlFor="catalog-search-scope-select"
             className="catalog-search-scope-label"
           >
             Buscar por
           </label>
-          <select
+          <CustomSelect
             id="catalog-search-scope-select"
-            className="catalog-search-scope-select"
+            variant="scope"
             value={searchScope}
-            onChange={(e) => {
-              setSearchScope(e.target.value as SearchScope);
+            onChange={(val) => {
+              setSearchScope(val as SearchScope);
               setCurrentPage(1);
             }}
-          >
-            <option value="ALL">Todo</option>
-            <option value="title">Título</option>
-            <option value="author">Autor</option>
-            <option value="category">Tema / Categoría</option>
-            <option value="isbn">ISBN</option>
-          </select>
+            options={scopeOptions}
+            fullWidth={false}
+          />
         </div>
       </form>
 
@@ -536,106 +594,56 @@ export const UserCatalogPage: React.FC = () => {
 
           {/* Filter 1: Categoría */}
           <div className="catalog-filter-group">
-            <label
-              htmlFor="filter-category"
-              className="catalog-filter-label"
-            >
-              Categoría
-            </label>
-            <div className="catalog-filter-select-wrapper">
-              <select
-                id="filter-category"
-                className="catalog-filter-select"
-                value={selectedCategory}
-                onChange={(e) => handleCategoryChange(e.target.value)}
-              >
-                <option value="ALL">Todas</option>
-                {BIBLIOGRAPHIC_CATEGORIES.map((cat) => (
-                  <option key={cat.code} value={cat.code}>
-                    {cat.label}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown size={14} className="catalog-filter-select-chevron" />
-            </div>
+            <CustomSelect
+              id="filter-category"
+              label="Categoría"
+              value={selectedCategory}
+              onChange={handleCategoryChange}
+              options={categoryOptions}
+              defaultOpen={typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('openCategory') === '1'}
+            />
           </div>
 
           {/* Filter 2: Autor */}
           <div className="catalog-filter-group">
-            <label htmlFor="filter-author" className="catalog-filter-label">
-              Autor
-            </label>
-            <div className="catalog-filter-select-wrapper">
-              <select
-                id="filter-author"
-                className="catalog-filter-select"
-                value={selectedAuthor}
-                onChange={(e) => {
-                  setSelectedAuthor(e.target.value);
-                  setCurrentPage(1);
-                }}
-              >
-                <option value="ALL">Todos</option>
-                {uniqueAuthors.map((author) => (
-                  <option key={author} value={author}>
-                    {author}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown size={14} className="catalog-filter-select-chevron" />
-            </div>
+            <CustomSelect
+              id="filter-author"
+              label="Autor"
+              value={selectedAuthor}
+              onChange={(val) => {
+                setSelectedAuthor(val);
+                setCurrentPage(1);
+              }}
+              options={authorOptions}
+            />
           </div>
 
           {/* Filter 3: Año de publicación */}
           <div className="catalog-filter-group">
-            <label htmlFor="filter-year" className="catalog-filter-label">
-              Año de publicación
-            </label>
-            <div className="catalog-filter-select-wrapper">
-              <select
-                id="filter-year"
-                className="catalog-filter-select"
-                value={selectedYear}
-                onChange={(e) => {
-                  setSelectedYear(e.target.value);
-                  setCurrentPage(1);
-                }}
-              >
-                <option value="ALL">Todos</option>
-                {uniqueYears.map((year) => (
-                  <option key={year} value={year.toString()}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown size={14} className="catalog-filter-select-chevron" />
-            </div>
+            <CustomSelect
+              id="filter-year"
+              label="Año de publicación"
+              value={selectedYear}
+              onChange={(val) => {
+                setSelectedYear(val);
+                setCurrentPage(1);
+              }}
+              options={yearOptions}
+            />
           </div>
 
           {/* Filter 4: Ubicación */}
           <div className="catalog-filter-group">
-            <label htmlFor="filter-location" className="catalog-filter-label">
-              Ubicación
-            </label>
-            <div className="catalog-filter-select-wrapper">
-              <select
-                id="filter-location"
-                className="catalog-filter-select"
-                value={selectedLocation}
-                onChange={(e) => {
-                  setSelectedLocation(e.target.value);
-                  setCurrentPage(1);
-                }}
-              >
-                <option value="ALL">Todas</option>
-                {uniqueLocations.map((loc) => (
-                  <option key={loc} value={loc}>
-                    {loc}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown size={14} className="catalog-filter-select-chevron" />
-            </div>
+            <CustomSelect
+              id="filter-location"
+              label="Ubicación"
+              value={selectedLocation}
+              onChange={(val) => {
+                setSelectedLocation(val);
+                setCurrentPage(1);
+              }}
+              options={locationOptions}
+            />
           </div>
         </aside>
 
@@ -676,31 +684,19 @@ export const UserCatalogPage: React.FC = () => {
 
               {/* Sort by dropdown */}
               <div className="catalog-sort-wrapper">
-                <label
-                  htmlFor="catalog-sort-select"
-                  className="catalog-sort-label"
-                >
-                  Ordenar por:
-                </label>
-                <div className="catalog-sort-select-box">
-                  <select
-                    id="catalog-sort-select"
-                    className="catalog-sort-select"
-                    value={sortOption}
-                    onChange={(e) => {
-                      setSortOption(e.target.value as SortOption);
-                      setCurrentPage(1);
-                    }}
-                  >
-                    <option value="relevance">Relevancia</option>
-                    <option value="title-asc">Título (A - Z)</option>
-                    <option value="title-desc">Título (Z - A)</option>
-                    <option value="year-desc">Año (Más reciente)</option>
-                    <option value="year-asc">Año (Más antiguo)</option>
-                    <option value="available-desc">Disponibilidad</option>
-                  </select>
-                  <ChevronDown size={12} className="catalog-sort-chevron" />
-                </div>
+                <span className="catalog-sort-label">Ordenar por:</span>
+                <CustomSelect
+                  id="catalog-sort-select"
+                  variant="inline"
+                  value={sortOption}
+                  onChange={(val) => {
+                    setSortOption(val as SortOption);
+                    setCurrentPage(1);
+                  }}
+                  options={sortOptions}
+                  fullWidth={false}
+                  align="right"
+                />
               </div>
             </div>
           </div>
@@ -813,6 +809,7 @@ export const UserCatalogPage: React.FC = () => {
                         {/* Action: Ver detalle */}
                         <Link
                           to={`/user/catalog/${book.id}`}
+                          state={{ from: `${location.pathname}${location.search}` }}
                           className="catalog-card-action-btn"
                           aria-label={`Ver detalle de ${book.title}`}
                         >
@@ -933,127 +930,55 @@ export const UserCatalogPage: React.FC = () => {
 
               {/* Categoría */}
               <div className="catalog-filter-group">
-                <label
-                  htmlFor="mobile-filter-category"
-                  className="catalog-filter-label"
-                >
-                  Categoría
-                </label>
-                <div className="catalog-filter-select-wrapper">
-                  <select
-                    id="mobile-filter-category"
-                    className="catalog-filter-select"
-                    value={selectedCategory}
-                    onChange={(e) => handleCategoryChange(e.target.value)}
-                  >
-                    <option value="ALL">Todas</option>
-                    {BIBLIOGRAPHIC_CATEGORIES.map((cat) => (
-                      <option key={cat.code} value={cat.code}>
-                        {cat.label}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown
-                    size={14}
-                    className="catalog-filter-select-chevron"
-                  />
-                </div>
+                <CustomSelect
+                  id="mobile-filter-category"
+                  label="Categoría"
+                  value={selectedCategory}
+                  onChange={handleCategoryChange}
+                  options={categoryOptions}
+                />
               </div>
 
               {/* Autor */}
               <div className="catalog-filter-group">
-                <label
-                  htmlFor="mobile-filter-author"
-                  className="catalog-filter-label"
-                >
-                  Autor
-                </label>
-                <div className="catalog-filter-select-wrapper">
-                  <select
-                    id="mobile-filter-author"
-                    className="catalog-filter-select"
-                    value={selectedAuthor}
-                    onChange={(e) => {
-                      setSelectedAuthor(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                  >
-                    <option value="ALL">Todos</option>
-                    {uniqueAuthors.map((author) => (
-                      <option key={author} value={author}>
-                        {author}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown
-                    size={14}
-                    className="catalog-filter-select-chevron"
-                  />
-                </div>
+                <CustomSelect
+                  id="mobile-filter-author"
+                  label="Autor"
+                  value={selectedAuthor}
+                  onChange={(val) => {
+                    setSelectedAuthor(val);
+                    setCurrentPage(1);
+                  }}
+                  options={authorOptions}
+                />
               </div>
 
               {/* Año de publicación */}
               <div className="catalog-filter-group">
-                <label
-                  htmlFor="mobile-filter-year"
-                  className="catalog-filter-label"
-                >
-                  Año de publicación
-                </label>
-                <div className="catalog-filter-select-wrapper">
-                  <select
-                    id="mobile-filter-year"
-                    className="catalog-filter-select"
-                    value={selectedYear}
-                    onChange={(e) => {
-                      setSelectedYear(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                  >
-                    <option value="ALL">Todos</option>
-                    {uniqueYears.map((year) => (
-                      <option key={year} value={year.toString()}>
-                        {year}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown
-                    size={14}
-                    className="catalog-filter-select-chevron"
-                  />
-                </div>
+                <CustomSelect
+                  id="mobile-filter-year"
+                  label="Año de publicación"
+                  value={selectedYear}
+                  onChange={(val) => {
+                    setSelectedYear(val);
+                    setCurrentPage(1);
+                  }}
+                  options={yearOptions}
+                />
               </div>
 
               {/* Ubicación */}
               <div className="catalog-filter-group">
-                <label
-                  htmlFor="mobile-filter-location"
-                  className="catalog-filter-label"
-                >
-                  Ubicación
-                </label>
-                <div className="catalog-filter-select-wrapper">
-                  <select
-                    id="mobile-filter-location"
-                    className="catalog-filter-select"
-                    value={selectedLocation}
-                    onChange={(e) => {
-                      setSelectedLocation(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                  >
-                    <option value="ALL">Todas</option>
-                    {uniqueLocations.map((loc) => (
-                      <option key={loc} value={loc}>
-                        {loc}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown
-                    size={14}
-                    className="catalog-filter-select-chevron"
-                  />
-                </div>
+                <CustomSelect
+                  id="mobile-filter-location"
+                  label="Ubicación"
+                  value={selectedLocation}
+                  onChange={(val) => {
+                    setSelectedLocation(val);
+                    setCurrentPage(1);
+                  }}
+                  options={locationOptions}
+                />
               </div>
             </div>
 

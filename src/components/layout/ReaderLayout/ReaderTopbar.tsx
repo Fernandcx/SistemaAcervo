@@ -5,14 +5,14 @@ import { useAuth } from '../../../features/auth/AuthContext';
 import './ReaderTopbar.css';
 
 interface ReaderTopbarProps {
-  title?: string;
+  title?: React.ReactNode;
   subtitle?: string;
   onOpenMobileMenu?: () => void;
 }
 
 export const ReaderTopbar: React.FC<ReaderTopbarProps> = ({
   title = 'Inicio',
-  subtitle = 'Tu espacio de lectura',
+  subtitle,
   onOpenMobileMenu,
 }) => {
   const { user } = useAuth();
@@ -47,7 +47,11 @@ export const ReaderTopbar: React.FC<ReaderTopbarProps> = ({
         )}
 
         <div className="reader-topbar-titles">
-          <h1 className="reader-topbar-title">{title}</h1>
+          {typeof title === 'string' ? (
+            <h1 className="reader-topbar-title">{title}</h1>
+          ) : (
+            <div className="reader-topbar-title-node">{title}</div>
+          )}
           {subtitle && <p className="reader-topbar-subtitle">{subtitle}</p>}
         </div>
       </div>
